@@ -107,10 +107,18 @@ namespace ACNH_Dumper
                 case 1: return Data[offset].ToString();
                 case 2: return BitConverter.ToInt16(Data, offset).ToString();
                 case 4: return $"0x{BitConverter.ToUInt32(Data, offset):X8}";
+                case 5: return $"0x{FiveByteInt(offset):X10}";
                 case 8: return $"0x{BitConverter.ToUInt64(Data, offset):X16}";
 
                 default: return Encoding.UTF8.GetString(Data, offset, length);
             }
+        }
+
+        private ulong FiveByteInt(in int offset)
+        {
+            byte[] tmpBytes = new byte[8] { 0, 0, 0, 0, 0, 0, 0, 0 };
+            Array.Copy(Data.Skip(offset).Take(5).ToArray(), 0, tmpBytes, 2, 5);
+            return BitConverter.ToUInt64(tmpBytes, 0);
         }
 
         private int GetFieldLength(in int i)
